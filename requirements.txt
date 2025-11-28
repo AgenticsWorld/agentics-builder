@@ -1,0 +1,50 @@
+# LLM APIs
+aider-chat==0.86.1
+anthropic==0.48.0
+openai==1.99.1
+tiktoken==0.10.0
+
+# System Dependencies
+pydantic>=2.10.0
+pytest>=8.3.3
+python-dotenv>=1.0.1
+pyyaml>=6.0.2
+typer>=0.13.1
+rich>=13.9.4
+backoff>=2.2.1
+requests>=2.31.0
+schedule>=1.2.2
+
+# Trading
+pandas>=2.2.3
+ta>=0.11.0
+backtesting>=0.6.1
+# ccxt>=4.4.30
+datetime>=5.4
+pytz>=2024.1
+numpy>=1.26.4
+
+# Stock
+yfinance==0.2.54
+akshare>=1.16.8
+longport==2.1.12
+alpaca-py==0.40.0
+tradingview-datafeed>=2.1.1
+
+# Web3
+solders==0.25.0
+solana==0.36.5
+web3>=7.8.0
+eth_account
+hyperliquid-python-sdk==0.10.1
+jupiter_python_sdk==0.0.2.0
+
+# Database
+supabase==2.15.0
+
+#A2A
+a2a-sdk==0.3.12
+
+
+
+

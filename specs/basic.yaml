@@ -1,0 +1,42 @@
+# The prompt that describes what changes need to be made to the codebase
+prompt: specs/spec.md
+
+# The model to use for code generation
+# Supported models: gpt-4o, gpt-4o-mini, o1-mini, o1, o3-mini, sonnet, claude-3-5-haiku-20241022, deepseek, deepseek/deepseek-chat-v3-0324, deepseek/deepseek-coder, deepseek/deepseek-reasoner
+# openrouter/anthropic/claude-3.7-sonnet, openrouter/deepseek/deepseek-chat-v3-0324, openrouter/deepseek/deepseek-r1, openrouter/openai/o1
+# https://aider.chat/docs/llms.html
+coder_model: openrouter/anthropic/claude-3.7-sonnet
+
+# Aider mode: code, architect, ask, help
+# edit_format: architect
+edit_format: code
+
+editor_model: openrouter/anthropic/claude-3.7-sonnet
+
+# The model to use for code evaluation
+# Reasoning models are recommended
+# Supported models: openai/o3-mini, anthropic/claude-3.7-sonnet:thinking, deepseek/deepseek-r1
+evaluator_model: openai/o3-mini
+
+# List of files that can be modified by the AI
+context_editable:
+- agent.py
+
+# List of files that provide context but cannot be modified
+context_read_only:
+- docs/ai_docs.md
+
+# Command to run tests/validation
+# Example: "pytest tests/" or "python -m unittest"
+execution_command: python agent.py
+
+# Maximum number of attempts to generate correct code
+# Recommended range: 3-10
+max_iterations: 3
+
+# Evaluator type to use
+# Currently only supports: "default" 
+evaluator: default
+
+# Language to use for notes generation
+language: English

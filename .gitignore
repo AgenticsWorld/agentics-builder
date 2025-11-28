@@ -1,0 +1,19 @@
+# Finder (MacOS) folder config
+.DS_Store
+
+__pycache__/
+
+.env
+
+.aider.chat.history.md
+
+modules-*.zip
+
+# Ignore tests folder
+tests/
+.vscode
+.claude
+
+docs/
+.specstory/
+.cursorindexingignore
