@@ -69,14 +69,6 @@ class Director:
 
         config = DirectorConfig(**config_dict)
 
-        # Validate evaluator_model is one of the allowed values
-        # allowed_evaluator_models = {"gpt-4o", "gpt-4o-mini", "o1-mini", "o1", "o3-mini"}
-        # if config.evaluator_model not in allowed_evaluator_models:
-        #     raise ValueError(
-        #         f"evaluator_model must be one of {allowed_evaluator_models}, "
-        #         f"got {config.evaluator_model}"
-        #     )
-
         # Validate we have at least 1 editable file
         if not config.context_editable:
             raise ValueError("At least one editable context file must be specified")

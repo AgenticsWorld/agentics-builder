@@ -17,7 +17,8 @@ pip install -r requirements.txt
 ```
 
 - Update `.env`
-  - Update with your keys
+  - Add OPENROUTER_API_KEY (Always Required. Request from https://openrouter.ai/settings/keys)
+  - Add other keys (Opinioal based on models in basic.yaml. Get key name from https://aider.chat/docs/llms.html)
 
 
 ## Config

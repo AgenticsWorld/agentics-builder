@@ -11,11 +11,11 @@ coder_model: openrouter/anthropic/claude-3.7-sonnet
 # edit_format: architect
 edit_format: code
 
-editor_model: openrouter/anthropic/claude-3.7-sonnet
+# editor_model: openrouter/anthropic/claude-3.7-sonnet
 
 # The model to use for code evaluation
 # Reasoning models are recommended
-# Supported models: openai/o3-mini, anthropic/claude-3.7-sonnet:thinking, deepseek/deepseek-r1
+# Supported models: openai/o3-mini, anthropic/claude-3.7-sonnet
 evaluator_model: openai/o3-mini
 
 # List of files that can be modified by the AI

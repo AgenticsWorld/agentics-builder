@@ -24,12 +24,12 @@ except ImportError:
 
 class LLMClient:
     """
-    统一的大模型客户端类，支持多种LLM服务提供商
+    Unified LLM client class supporting multiple LLM service providers
     """
 
-    # # 支持的提供商列表
+    # # List of supported providers
     # PROVIDERS = ["openai", "claude", "deepseek", "openrouter", "xai"]
-    # # 默认模型映射
+    # # Default model mapping
     # DEFAULT_MODELS = {
     #     "openrouter": "anthropic/claude-3.7-sonnet", # openrouter/auto
     #     "openai": "gpt-4o",
@@ -37,15 +37,15 @@ class LLMClient:
     #     "deepseek": "deepseek-chat-v3-0324",
     #     "xai": "grok-2-latest"
     # }
-    # # API端点映射
+    # # API endpoint mapping
     # API_ENDPOINTS = {
-    #     "openai": None,  # 使用SDK
-    #     "claude": None,  # 使用SDK
+    #     "openai": None,  # Use SDK
+    #     "claude": None,  # Use SDK
     #     "deepseek": "https://api.deepseek.com/chat/completions",
     #     "openrouter": "https://openrouter.ai/api/v1",
-    #     "xai": "https://api.x.ai/v1"  # 更新为正确的 XAI API 端点
+    #     "xai": "https://api.x.ai/v1"  # Updated to correct XAI API endpoint
     # }
-    # # 环境变量密钥映射
+    # # Environment variable key mapping
     # ENV_KEYS = {
     #     "openai": "OPENAI_API_KEY",
     #     "claude": "ANTHROPIC_API_KEY",
@@ -86,9 +86,9 @@ class LLMClient:
     DEFAULT_MODELS = {"openrouter": "deepseek/deepseek-chat-v3-0324"}
 
     if os.getenv("AGENT_ACCESS_TOKEN"):
-        # API端点映射
+        # API endpoint mapping
         API_ENDPOINTS = {"openrouter": os.getenv("AGENTICS_LLM_URL")}
-        # 环境变量密钥映射
+        # Environment variable key mapping
         ENV_KEYS = {"openrouter": "AGENT_ACCESS_TOKEN"}
     else:
         API_ENDPOINTS = {"openrouter": "https://openrouter.ai/api/v1"}
@@ -96,11 +96,11 @@ class LLMClient:
 
     def __init__(self, provider: str = "openrouter", model: Optional[str] = None):
         """
-        初始化LLM客户端
+        Initialize LLM client
 
         Args:
-            provider: 提供商名称，支持 "openai", "claude", "deepseek", "openrouter", "xai"
-            model: 模型名称，如果为None则使用默认模型
+            provider: Provider name, supports "openai", "claude", "deepseek", "openrouter", "xai"
+            model: Model name, if None then use default model
         """
         if provider not in self.PROVIDERS:
             raise ValueError(
@@ -115,7 +115,7 @@ class LLMClient:
                 f"Unsupported model: {self.model}. Supported models: {', '.join(self.MODELS)}"
             )
 
-        # 加载环境变量
+        # Load environment variables
         load_dotenv()
         self.api_key = os.getenv(self.ENV_KEYS[provider]) or os.environ.get(
             self.ENV_KEYS[provider]
@@ -126,7 +126,7 @@ class LLMClient:
                 f"{self.ENV_KEYS[provider]} not found in environment variables"
             )
 
-        # 初始化客户端
+        # Initialize client
         self.client = None
         if provider == "openai":
             self.client = OpenAI(api_key=self.api_key)
@@ -142,39 +142,39 @@ class LLMClient:
             )
 
     def close(self):
-        """关闭客户端连接，释放资源"""
+        """Close client connection and release resources"""
         if self.client and hasattr(self.client, "close"):
             try:
                 self.client.close()
             except Exception as e:
-                # 静默处理关闭错误，不影响主流程
+                # Silently handle close errors, do not affect main flow
                 pass
 
     def __enter__(self):
-        """支持上下文管理器"""
+        """Support context manager"""
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """退出上下文时自动关闭"""
+        """Automatically close when exiting context"""
         self.close()
         return False
 
     def _process_input_image(self, img_input: Union[str, bytes]) -> str:
-        """处理输入图片，转换为 data URL 格式。
+        """Process input image and convert to data URL format.
 
         Args:
-            img_input: 图片输入，可以是：
-                - HTTP/HTTPS URL（str，如 "https://example.com/image.png"）
-                - 文件路径（str）
-                - base64 字符串（str，以 data:image/ 开头或纯 base64）
-                - 图片字节数据（bytes）
+            img_input: Image input, can be:
+                - HTTP/HTTPS URL (str, e.g., "https://example.com/image.png")
+                - File path (str)
+                - base64 string (str, starting with data:image/ or pure base64)
+                - Image byte data (bytes)
 
         Returns:
-            data URL 格式的字符串，如 "data:image/png;base64,..."
+            Data URL format string, e.g., "data:image/png;base64,..."
 
         Raises:
-            ValueError: 如果图片格式无效或文件不存在
-            requests.RequestException: 如果从 URL 下载图片失败
+            ValueError: If image format is invalid or file does not exist
+            requests.RequestException: If downloading image from URL fails
         """
         # Handle file path
         if isinstance(img_input, str):
@@ -273,16 +273,16 @@ class LLMClient:
         timeout: int = 180,
     ) -> Dict[str, Any]:
         """
-        通用的聊天完成方法
+        Generic chat completion method
 
         Args:
-            messages: 消息列表，格式为 [{"role": "user", "content": "Hello"}, ...]
-            temperature: 温度参数，控制随机性
-            max_tokens: 最大生成token数
-            timeout: 请求超时时间(秒)，默认180秒
+            messages: Message list, format: [{"role": "user", "content": "Hello"}, ...]
+            temperature: Temperature parameter, controls randomness
+            max_tokens: Maximum number of tokens to generate
+            timeout: Request timeout in seconds, default 180 seconds
 
         Returns:
-            响应结果
+            Response result
         """
         if self.provider in ["openai", "xai", "openrouter"]:
             return self._openai_completion(messages, temperature, max_tokens, timeout)
@@ -298,7 +298,7 @@ class LLMClient:
         max_tokens: int,
         timeout: int,
     ) -> Dict[str, Any]:
-        """OpenAI API调用"""
+        """OpenAI API call"""
         response = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
@@ -307,7 +307,7 @@ class LLMClient:
             timeout=timeout,
         )
 
-        # 转换为统一格式
+        # Convert to unified format
         return {
             "content": response.choices[0].message.content,
             "raw_response": response,
@@ -321,8 +321,8 @@ class LLMClient:
         max_tokens: int,
         timeout: int,
     ) -> Dict[str, Any]:
-        """Claude API调用"""
-        # 提取system消息
+        """Claude API call"""
+        # Extract system message
         system_message = None
         claude_messages = []
 
@@ -332,17 +332,17 @@ class LLMClient:
             else:
                 claude_messages.append(msg)
 
-        # 调用Claude API
+        # Call Claude API
         response = self.client.messages.create(
             model=self.model,
-            system=system_message,  # 系统提示作为单独参数
-            messages=claude_messages,  # 不包含system角色的消息
+            system=system_message,  # System prompt as separate parameter
+            messages=claude_messages,  # Messages without system role
             temperature=temperature,
             max_tokens=max_tokens,
             timeout=timeout,
         )
 
-        # 转换为统一格式
+        # Convert to unified format
         return {
             "content": response.content[0].text,
             "raw_response": response,
@@ -356,18 +356,18 @@ class LLMClient:
         max_tokens: int,
         timeout: int,
     ) -> Dict[str, Any]:
-        """通用API调用（用于DeepSeek、OpenRouter和XAI）"""
+        """Generic API call (for DeepSeek, OpenRouter, and XAI)"""
         url = self.API_ENDPOINTS[self.provider]
 
         headers = {"Content-Type": "application/json"}
 
-        # 根据不同提供商设置不同的认证头
+        # Set different authentication headers according to different providers
         if self.provider == "deepseek":
             headers["Authorization"] = f"Bearer {self.api_key}"
         elif self.provider == "openrouter":
             headers["Authorization"] = f"Bearer {self.api_key}"
-            headers["HTTP-Referer"] = "https://your-app-url.com"  # OpenRouter需要
-            headers["X-Title"] = "Your App Name"  # OpenRouter需要
+            headers["HTTP-Referer"] = "https://your-app-url.com"  # Required by OpenRouter
+            headers["X-Title"] = "Your App Name"  # Required by OpenRouter
         elif self.provider == "xai":
             headers["Authorization"] = f"Bearer {self.api_key}"
 
@@ -382,7 +382,7 @@ class LLMClient:
         response.raise_for_status()
         result = response.json()
 
-        # 转换为统一格式
+        # Convert to unified format
         return {
             "content": result["choices"][0]["message"]["content"],
             "raw_response": result,
@@ -397,38 +397,38 @@ class LLMClient:
         input_images: Optional[List[Union[str, bytes]]] = None,
         auto_resize: bool = True,
     ) -> Dict[str, Any]:
-        """生成图片（使用OpenAI兼容SDK）。
-        返回包含base64字符串的统一结构。
+        """Generate image (using OpenAI-compatible SDK).
+        Returns a unified structure containing base64 string.
 
         Note: OpenRouter uses /chat/completions with modalities for image generation,
         so we use chat.completions.create() instead of images.generate().
 
-        支持的模型包括：
+        Supported models include:
         - google/gemini-2.5-flash-preview-image
         - google/gemini-3-pro-image-preview
 
         Args:
-            prompt: 图像生成的提示词
-            size: 图像尺寸，格式为 "WIDTHxHEIGHT"，默认 "1024x1024"
-                  注意：某些模型可能只支持特定尺寸（如 1024x1024 正方形），
-                  非标准尺寸可能无法正常生成。建议使用 1024x1024、512x512 等标准尺寸。
-            timeout: 请求超时时间(秒)，默认180秒
-            input_images: 可选的输入图片列表，支持以下格式：
-                - HTTP/HTTPS URL：["https://example.com/image.png"]
-                - 文件路径列表：["path/to/image1.png", "path/to/image2.png"]
-                - base64字符串列表：["base64_string1", "base64_string2"]
-                - data URL：["data:image/png;base64,..."]
-                - 混合格式（URL、路径、base64等）
-                这些图片将作为参考图片传递给模型
-            auto_resize: 如果为 True，生成后自动调整图片到指定尺寸（需要 PIL/Pillow）
-                        这对于非正方形尺寸特别有用，因为模型可能只生成正方形图片
-                        如果 PIL 不可用，此参数将被忽略
+            prompt: Image generation prompt
+            size: Image size, format "WIDTHxHEIGHT", default "1024x1024"
+                  Note: Some models may only support specific sizes (e.g., 1024x1024 square),
+                  non-standard sizes may not generate properly. Recommended to use standard sizes like 1024x1024, 512x512.
+            timeout: Request timeout in seconds, default 180 seconds
+            input_images: Optional input image list, supports the following formats:
+                - HTTP/HTTPS URL: ["https://example.com/image.png"]
+                - File path list: ["path/to/image1.png", "path/to/image2.png"]
+                - base64 string list: ["base64_string1", "base64_string2"]
+                - data URL: ["data:image/png;base64,..."]
+                - Mixed formats (URL, path, base64, etc.)
+                These images will be passed to the model as reference images
+            auto_resize: If True, automatically resize image to specified size after generation (requires PIL/Pillow)
+                        This is particularly useful for non-square sizes, as models may only generate square images
+                        If PIL is not available, this parameter will be ignored
 
         Returns:
-            包含base64图像数据的字典，格式为 {"b64": str, "raw_response": Any}
+            Dictionary containing base64 image data, format: {"b64": str, "raw_response": Any}
 
         Raises:
-            ValueError: 如果响应中缺少图像数据，或输入图片格式无效
+            ValueError: If image data is missing in response, or input image format is invalid
         """
         # Prepare request parameters
         # Note: Size adjustment is handled by post-processing (auto_resize),
